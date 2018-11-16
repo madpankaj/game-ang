@@ -9,7 +9,7 @@ export class AppComponent implements OnInit{
   constructor( private elementRef: ElementRef){
 
   this.Interval = setInterval(()=>{
-    this.checkGameStatus() },4000); 
+    this.checkGameStatus() },2000); 
        
   }
  @ViewChild('myList')  myList: ElementRef;
@@ -19,14 +19,15 @@ export class AppComponent implements OnInit{
  // timeInterval = prompt('Please enter time interval to be auto colored');
   n_numberArray = [];
   totalBoxes = this.n*this.n;
-  //unColoredBoxes = this.totalBoxes - this.defaultColoredBoxes -1;
+  unColoredBoxes = this.totalBoxes - this.defaultColoredBoxes;
   Interval:any;
   ngOnInit(){
     this.generateMatrixArray();
     this.updateMatrixArray();
     console.log('uncolor box', this.unColoredBoxes)
     //
-    
+    var wrapper = document.querySelector('ul');
+    wrapper.style.width = this.n*100 + 'px';
   }
   
   counter:any = 1;
@@ -39,7 +40,7 @@ export class AppComponent implements OnInit{
       this.counter++;
       }
     }
-    console.log(this.n_numberArray);
+    //console.log(this.n_numberArray);
   }
 
   generateMatrixArray(){
@@ -60,18 +61,19 @@ getEventTarget(e) {
    
    
     const elementId = event.target.getAttribute('id');
-    console.log(elementId);
+    //console.log(elementId);
     const dVal = event.target.getAttribute('data-val');
     
-      //if(event.target.classList.contains('active')){
-      if(dVal == 0){
+      if(event.target.classList.contains('active')){
+      //if(dVal == 0){
         event.target.classList.remove('active'); 
         const arrPostion = elementId.toString().split("");
         
-        this.n_numberArray [arrPostion[0]][arrPostion[1]] = 1;
-        console.log(this.n_numberArray);
-        console.log(this.n_numberArray [arrPostion[0]][arrPostion[1]]);
+        //this.n_numberArray [arrPostion[0]][arrPostion[1]] = 1;
+       // console.log(this.n_numberArray);
+       // console.log(this.n_numberArray [arrPostion[0]][arrPostion[1]]);
         this.unColoredBoxes++;
+        console.log(this.unColoredBoxes);
         //setTimeout(()=>{this.n_numberArray[arrPostion[0]][arrPostion[1]] = 0;},500)
         
         //console.log(this.n_numberArray [arrPostion[0]][arrPostion[1]]);
@@ -115,10 +117,11 @@ getEventTarget(e) {
   updateBoxColor(){
     for(let i = 0; i < this.n; i++){
       for( let j = 0; j < this.n; j++){
-          if(this.n_numberArray[i][j] === 1){
-              this.n_numberArray[i][j] = 0;
+          //if(this.n_numberArray[i][j] === 1){
+              //this.n_numberArray[i][j] = 0;
               var element:any = document.getElementById(`${i}${j}`);
-              console.log(element)
+              if(!element.classList.contains('active')){
+              //console.log(element)
               element.classList.add("active");
               element.setAttribute('data-val', 1);
               this.unColoredBoxes--;
