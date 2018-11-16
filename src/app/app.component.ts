@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,31 +6,36 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
-  constructor( private elementRef: ElementRef){
-
-  this.Interval = setInterval(()=>{
-    this.checkGameStatus() },2000); 
-       
+  constructor(){
+    this.Interval = setInterval(()=>{
+      this.checkGameStatus() },this.timeInterval*1000
+    ); 
   }
- @ViewChild('myList')  myList: ElementRef;
  
   n:any = prompt('Please enter number for matrix');
   defaultColoredBoxes:any = prompt('Please enter number to be colored box');
- // timeInterval = prompt('Please enter time interval to be auto colored');
+  timeInterval:any = prompt('Please enter time interval to be auto colored');
+  message = "Game has been started";
+  
+
   n_numberArray = [];
   totalBoxes = this.n*this.n;
   unColoredBoxes = this.totalBoxes - this.defaultColoredBoxes;
   Interval:any;
+  isUserWinGame = false;
+  isGameFinish = false;
+
   ngOnInit(){
     this.generateMatrixArray();
     this.updateMatrixArray();
-    console.log('uncolor box', this.unColoredBoxes)
-    //
+  
     var wrapper = document.querySelector('ul');
-    wrapper.style.width = this.n*100 + 'px';
+    wrapper.style.width = this.n <10 ? this.n*100 + 'px':this.n*50 + 'px' ;
   }
   
   counter:any = 1;
+
+  // Updating matrix array according to passing auto colored boxes
   updateMatrixArray(){
     for(let i = 0; i < this.n; i++){
       for( let j = 0; j < this.n; j++){
@@ -40,9 +45,9 @@ export class AppComponent implements OnInit{
       this.counter++;
       }
     }
-    //console.log(this.n_numberArray);
   }
 
+  // Generating matrix array from n papameter
   generateMatrixArray(){
     for(var i = 0; i < this.n; i++){
       const newArry = Array.from(Array(this.n*1).map((x,i)=> x)).fill(1);
@@ -51,105 +56,65 @@ export class AppComponent implements OnInit{
     
   }
 
-getEventTarget(e) {
+  // Gettiing targeted li element
+  getEventTarget(e) {
       e = e || window.event;
       return e.target || e.srcElement; 
   }
 
-
+  //do uncolor box on click by user
   unColoredBox(event){
-   
-   
     const elementId = event.target.getAttribute('id');
-    //console.log(elementId);
-    const dVal = event.target.getAttribute('data-val');
-    
-      if(event.target.classList.contains('active')){
-      //if(dVal == 0){
-        event.target.classList.remove('active'); 
-        const arrPostion = elementId.toString().split("");
-        
-        //this.n_numberArray [arrPostion[0]][arrPostion[1]] = 1;
-       // console.log(this.n_numberArray);
-       // console.log(this.n_numberArray [arrPostion[0]][arrPostion[1]]);
-        this.unColoredBoxes++;
-        console.log(this.unColoredBoxes);
-        //setTimeout(()=>{this.n_numberArray[arrPostion[0]][arrPostion[1]] = 0;},500)
-        
-        //console.log(this.n_numberArray [arrPostion[0]][arrPostion[1]]);
-        
-        if(this.unColoredBoxes == this.totalBoxes){
-              //clearInterval(Interval);
-              alert('yea , you won the game');
-        }
-        else if(this.unColoredBoxes == 0){
-            alert('You lost the game');
-          // clearInterval(Interval);
-        }
-      }
+    if(event.target.classList.contains('active')){
+      event.target.classList.remove('active'); 
+      const arrPostion = elementId.toString().split("");
+      this.unColoredBoxes++;
+      this.gameWinStatus();
+    }
   
-    
-    // const target = this.getEventTarget(e);
-    // const elementId = target.getAttribute('id');
-    // const dVal = target.getAttribute('data-val');
-    // console.log(target)
-    // console.log('elementId '+elementId)
-    // if(dVal == 1){
-    //     var arrPostion = elementId.toString().split("");
-    //     var element = document.getElementById(target.getAttribute('id'));
-    //     element.classList.remove("active");
-    //     target.classList.remove('active');
-    //     this.n_numberArray[arrPostion[0]][arrPostion[1]] = 0
-    //     console.log(this.n_numberArray [arrPostion[0]][arrPostion[1]])
-    //     this.unColoredBoxes++;
-    //     if(this.unColoredBoxes == this.totalBoxes){
-    //         clearInterval(Interval);
-    //         alert('yea , you won the game');
-    //     }
-    //     else if(this.unColoredBoxes == 0){
-    //         alert('You lost the game');
-    //        clearInterval(Interval);
-    //     }
-
-    // }
-   
   }
+
+  gameWinStatus(){
+    if(this.unColoredBoxes == this.totalBoxes){
+        clearInterval(this.Interval);
+        var msgElement:any = document.getElementById('msg');
+        msgElement.classList.add("win");
+        this.message = "Yea , You Won the Game";
+        this.isGameFinish = true;
+    }
+    else if(this.unColoredBoxes == 0){
+      clearInterval(this.Interval);
+      var msgElement:any = document.getElementById('msg');
+      msgElement.classList.add("lost");  
+      this.message = "You Lost the Game, Try Again";
+      this.isGameFinish = true;
+    }
+    return this.isGameFinish;
+  }
+
+
+  // Updating box color Auto by time interval
   updateBoxColor(){
     for(let i = 0; i < this.n; i++){
       for( let j = 0; j < this.n; j++){
-          //if(this.n_numberArray[i][j] === 1){
-              //this.n_numberArray[i][j] = 0;
-              var element:any = document.getElementById(`${i}${j}`);
-              if(!element.classList.contains('active')){
-              //console.log(element)
+          var element:any = document.getElementById(`${i}${j}`);
+          if(!element.classList.contains('active')){
               element.classList.add("active");
               element.setAttribute('data-val', 1);
               this.unColoredBoxes--;
-              console.log('uncoloredBoxes '+this.unColoredBoxes)
-              console.log('totalBoxes '+this.totalBoxes)
+            //  console.log('uncoloredBoxes '+this.unColoredBoxes)
+            //  console.log('totalBoxes '+this.totalBoxes)
               return;
           }
-          
       }
     }
   }
 
-
-
   checkGameStatus(){
-  
-    if(this.unColoredBoxes == this.totalBoxes){
-        clearInterval(this.Interval);
-        alert('yea , you won the game');
+    if(!this.gameWinStatus()){
+      this.updateBoxColor();
     }
-    else if(this.unColoredBoxes == 0){
-        alert('You lost the game');
-        clearInterval(this.Interval);
-    }
-    else{
-        this.updateBoxColor();
-    }
-}
+  }
 
 }
 

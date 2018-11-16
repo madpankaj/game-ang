@@ -1,3 +1,4 @@
+<div id="msg" class="msg">{{  message }}</div>
 <ul id="myList" (click)="unColoredBox($event)" #myList>
     <ng-container *ngFor="let itemsArray of n_numberArray;index as i" >
         <li 
@@ -5,10 +6,9 @@
         id="{{i}}{{j}}" [attr.data-val]="item"   
         [className]="item == 0 ? 'item active' : 'item'" 
       
+        [ngStyle]="{'width':n <= 10 ? '100px' : '50px','height':n <= 10 ? '100px' : '50px' }"
         
-        
-        >Counter = {{ (i * itemsArray.length) + j + 1 }} 
-            {{item}}
+        >
         </li>
     </ng-container>
 </ul>
